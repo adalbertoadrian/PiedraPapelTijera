@@ -14,7 +14,6 @@
 Route::get('/', function () {
     return view('Game.index');
 });
-
 Route::post('/game/start', 'GameController@start');
 Route::post('/game/match', 'GameController@match');
 

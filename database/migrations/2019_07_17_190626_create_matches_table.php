@@ -18,6 +18,7 @@ class CreateMatchesTable extends Migration
             $table->integer('game_id');
             $table->integer('round_number');
             $table->string('player_turn_name');
+            $table->integer('move_id');
             $table->timestamps();
         });
     }
