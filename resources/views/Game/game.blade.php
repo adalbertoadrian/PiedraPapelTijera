@@ -19,7 +19,21 @@
         </div>
         <div class="col-sm-8">
             @if($data["round_number"] == 3)
-
+                <h1>Score</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Round</th>
+                            <th>Winner</th>
+                        </tr>
+                    </thead>
+                    @foreach ($data["scores"] as $key => $score)
+                        <tr>
+                            <td>{{ $key }}</td>
+                            <td>{{ $score }}</td>
+                        </tr>
+                    @endforeach
+                </table>
             @endif
         </div>
     </div>

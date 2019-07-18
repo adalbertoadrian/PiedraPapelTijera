@@ -17,7 +17,7 @@ class CreateGamesTable extends Migration
             $table->bigIncrements('id');
             $table->string('player1');
             $table->string('player2');
-            $table->integer('finalized')->default(1);
+            $table->integer('finalized')->default(0);
             $table->string('wins')->nullable();
             $table->timestamps();
         });

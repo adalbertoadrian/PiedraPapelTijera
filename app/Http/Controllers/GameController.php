@@ -81,9 +81,7 @@ class GameController extends Controller
             ];
             //Si es la tercera ronda muestro el cuadro de puntaje
             if($round_number == 3) {
-                $plays = Match::select("move_id", "player_turn_name", "round_number")->where("game_id", $request->game_id)->get();
-                $plays = $plays->groupBy('round_number')->toArray();;
-                //dd($plays);
+                $data["scores"] = $this->Score($request, true);
             }
             if($draw == true) {
                 return view("Game.game", ["data" => $data])->with('status', 'Empate, Seleccioné de Nuevo');
@@ -91,7 +89,33 @@ class GameController extends Controller
                 return view("Game.game", ["data" => $data]);
             }
         } else {
-            return view("Game.finish");
+            $winner = array_key_first(array_count_values($this->Score($request, false)));
+            Game::where('id', $request->game_id)->update(['finalized' => 1, 'wins' => $winner]);
+            return view("Game.finish", ["winner" => $winner]);
         }
+    }
+    //Funcion para Calcular el marcador
+    private function Score($request, $onGame) {
+        $plays = Match::select("move_id", "player_turn_name", "round_number")->where("game_id", $request->game_id)->get()
+                        ->when($onGame, function ($query) {
+                            return $query->take(4);
+                        });
+        $plays = $plays->groupBy('round_number')->toArray();
+        $Scores = [];
+        foreach($plays as $keyRound => $player) {
+            foreach($player as $keyMove => $move) {
+                if($keyMove == 0) {
+                    $movePlayer1 = Move::select("id", "move", "kills")->where("id", $move["move_id"])->first();
+                    $player1Name = $move["player_turn_name"];
+                }
+                if($keyMove == 1) {
+                    $movePlayer2 = Move::select("id", "move", "kills")->where("id", $move["move_id"])->first();
+                    $player2Name = $move["player_turn_name"];
+                }
+            }
+            if($movePlayer1["kills"] == $movePlayer2["move"]) $Scores[$keyRound] = $player1Name;
+            if($movePlayer2["kills"] == $movePlayer1["move"]) $Scores[$keyRound] = $player2Name;
+        }
+        return $Scores;
     }
 }
